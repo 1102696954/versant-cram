@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Versant 背题手册 · 语音版</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1a1d23; --muted: #6b7280;
+    --accent: #2563eb; --accent-soft: #dbeafe; --border: #e5e7eb;
+    --highlight: #fef3c7; --green: #059669;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: var(--bg); color: var(--text); padding: 24px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .tab { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-size: 14px; }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  button { font-size: 14px; cursor: pointer; }
+  .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); }
+  .btn:hover { background: #f3f4f6; }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.primary:hover { background: #1d4ed8; }
+  .btn.active-toggle { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .settings { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .settings label { display: flex; align-items: center; gap: 6px; }
+  select, input[type="range"] { accent-color: var(--accent); }
+  select { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; max-width: 260px; }
+  .val { min-width: 42px; display: inline-block; text-align: right; font-variant-numeric: tabular-nums; }
+  .status { margin-left: auto; font-size: 13px; color: var(--muted); }
+  .status.playing { color: var(--green); font-weight: 600; }
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .item { display: flex; gap: 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); cursor: pointer; align-items: baseline; }
+  .item:hover { background: #f9fafb; }
+  .item.current { background: var(--highlight); border-color: #f59e0b; }
+  .item .num { color: var(--muted); font-size: 12px; min-width: 28px; flex-shrink: 0; }
+  .item .body { font-size: 14px; line-height: 1.55; }
+  .q { font-weight: 600; }
+  .a { color: #374151; margin-top: 2px; }
+  .a::before { content: "→ "; color: var(--muted); }
+  .group-title { font-size: 14px; font-weight: 700; color: var(--accent); margin: 14px 0 6px; }
+  .story-title { font-size: 14px; font-weight: 700; color: var(--accent); margin: 14px 0 6px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  kbd { background: #e5e7eb; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
+  .q, .a { display: flex; align-items: baseline; gap: 6px; }
+  .q .txt, .a .txt { flex: 1; }
+  .eye { flex-shrink: 0; cursor: pointer; font-size: 13px; opacity: .5; user-select: none; }
+  .eye:hover { opacity: 1; transform: scale(1.15); }
+  .q.masked .txt, .a.masked .txt { filter: blur(6px); user-select: none; transition: filter .15s; border-radius: 4px; }
+  .q.masked .txt:hover, .a.masked .txt:hover { filter: blur(5px); }
+  .q:not(.masked), .a:not(.masked) { cursor: pointer; }
+  .mic { flex-shrink: 0; cursor: pointer; font-size: 13px; opacity: .5; user-select: none; }
+  .mic:hover { opacity: 1; }
+  .mic.listening { opacity: 1; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+  .voice-result { margin-top: 4px; font-size: 13px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .voice-result:empty { display: none; }
+  .heard-text { color: var(--green); font-style: italic; }
+  .verdict.ok { color: var(--green); font-weight: 700; }
+  .verdict.near { color: #d97706; font-weight: 700; }
+  .verdict.bad { color: #dc2626; font-weight: 700; }
+  .stats-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 10px 0; font-size: 13px; color: var(--muted); }
+  .stat-num { font-weight: 700; font-size: 20px; display: block; }
+  .stat-num.ok { color: var(--green); } .stat-num.near { color: #d97706; } .stat-num.bad { color: #dc2626; }
+  .wrong-item { display: flex; gap: 8px; align-items: baseline; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; margin: 4px 0; font-size: 13px; }
+  .wrong-item .wtxt { flex: 1; }
+  .tips { background: #eff6ff; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #374151; margin-top: 12px; line-height: 1.6; }
+  .explain-bar { margin-top: 4px; }
+  .btn-xs { padding: 2px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); cursor: pointer; color: var(--muted); }
+  .btn-xs:hover { background: #f3f4f6; color: var(--text); }
+  .explain-box { margin-top: 6px; background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.8; color: #374151; }
+  .explain-box:empty { display: none; }
+  .type-area { display: flex; gap: 6px; margin-top: 6px; }
+  .type-area input { flex: 1; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+  .type-area input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    h1 { font-size: 19px; }
+    .sub { font-size: 11px; }
+    .controls .btn { padding: 10px 14px; font-size: 13px; }
+    .settings { gap: 10px; }
+    .eye, .mic { padding: 5px 8px; font-size: 16px; }
+    .btn-xs { padding: 6px 12px; font-size: 14px; }
+    .item { padding: 12px 10px; }
+    .item .body { font-size: 15px; }
+    .type-area input { font-size: 16px; padding: 8px 12px; }
+    .wrong-item .btn { padding: 6px 10px; }
+  }
+</style>
+</head>
+<body>
+<h1>Versant 背题手册 · 语音版</h1>
+<div class="sub">👁 眼睛 = 显示/隐藏 · 点<b>文本</b> = 英文朗读 · 💡 讲解 = 中文解析 · 🎙 语音回答 / ✏️ 手写回答 = 自动判分 · 点<b>序号/空白</b> = 连播 · 空格 = 播放/暂停</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="card">
+  <div class="controls">
+    <button class="btn primary" id="btnPlay">▶ 播放</button>
+    <button class="btn" id="btnStop">■ 停止</button>
+    <button class="btn" id="btnPrev">⏮ 上一条</button>
+    <button class="btn" id="btnNext">⏭ 下一条</button>
+    <button class="btn" id="btnRepeat">🔁 循环: 关</button>
+    <button class="btn" id="btnAnswers">👁 全部显示</button>
+    <button class="btn" id="btnStats">📊 成绩</button>
+    <span class="status" id="status">就绪</span>
+  </div>
+  <div class="settings">
+    <label>语速 <input type="range" id="rate" min="0.5" max="1.2" step="0.05" value="0.9"> <span class="val" id="rateVal">0.90</span></label>
+    <label>答题停顿 <input type="range" id="gap" min="0" max="8" step="0.5" value="3"> <span class="val" id="gapVal">3.0s</span></label>
+    <label>静音结束 <input type="range" id="silence" min="1" max="10" step="0.5" value="2.5"> <span class="val" id="silenceVal">2.5s</span></label>
+    <label>语音 <select id="voiceSel"></select></label>
+    <label>范围 <select id="scopeSel"></select></label>
+  </div>
+</div>
+
+<div class="card" id="statsCard" style="display:none"></div>
+
+<div class="card">
+  <div class="list" id="list"></div>
+  <div class="hint" id="hint">提示：Mac Safari 的 Samantha / Chrome 的 Google 声音效果较好。TTS 由浏览器本地合成，无需联网 API。</div>
+  <div style="margin-top:8px;"><button class="btn" id="btnDiag">🩺 麦克风诊断</button></div>
+  <pre id="diagOut" style="display:none;margin-top:8px;font-size:12px;line-height:1.7;background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:10px;white-space:pre-wrap;"></pre>
+</div>
+
+<script>
+const DATA = {
+  partA: {
+    title: "Part A · 简答题",
+    items: [
+      { q: "What do you call a person who applies for a job?", a: "A job applicant" },
+      { q: "What organ pumps blood in a human body?", a: "The heart" },
+      { q: "Would increasing inventory levels reduce the risk of stockouts, or increase warehousing costs?", a: "Both" },
+      { q: "What do we call the device used to make bread brown and crispy in the morning?", a: "A toaster" },
+      { q: "What substance, born from tiny grains of rock, is typically found on beaches?", a: "Sand" },
+      { q: "What do we call the dry season in tropical climates?", a: "The dry season" },
+      { q: "What animal is known for its trunk and big ears?", a: "An elephant" },
+      { q: "What do we call someone who looks after young children during the day?", a: "A babysitter" },
+      { q: "What type of contract guarantees that a supplier will deliver materials at a predetermined price over a set period?", a: "A fixed-price contract" },
+      { q: "When you freeze water, what does it become?", a: "Ice" },
+      { q: "What do we call the small insect that makes honey?", a: "A bee" },
+      { q: "What do we call the joint in the middle of your leg?", a: "The knee" },
+      { q: "What is the large metal cup or statue that the winning team receives in many sport championships?", a: "A trophy" },
+      { q: "What piece of furniture do you typically sleep on at night?", a: "A bed" },
+      { q: "What financial document shows a company's assets, liabilities, and equity at a specific point in time?", a: "A balance sheet" },
+      { q: "If you add ice to a drink, does the drink get warmer or colder?", a: "Colder" },
+      { q: "To sweeten fruit, do you use sugar or pepper?", a: "Sugar" },
+      { q: "Which device do you use to remove wrinkles from clothes?", a: "An iron" },
+      { q: "What's the smell when there's a fire?", a: "Smoke" },
+      { q: "A standard couch has how many legs?", a: "Four" },
+      { q: "What term do we use for people who make drawings, paintings, and sculptures?", a: "Artists" },
+      { q: "Would a pilot fly a jet or operate a train?", a: "Fly a jet" },
+      { q: "What do you purchase to board a train?", a: "A train ticket" },
+      { q: "There are four directions: east, south, west, and what is the fourth one?", a: "North" },
+      { q: "What is the term used to refer to the list of food and beverages sold at a restaurant?", a: "A menu" },
+      { q: "My mother subscribes to a daily newspaper. How many issues a week does she receive?", a: "Seven issues" },
+      { q: "What vocal sound is usually made in reaction to something humorous?", a: "Laughter" },
+      { q: "Which is bigger, a spoon or a plate?", a: "A plate" },
+      { q: "Which is greater in size, an ocean or a lake?", a: "An ocean" },
+      { q: "What category do yellow, red, and orange belong to?", a: "Colors" },
+      { q: "Alex delayed the event. Is it taking place sooner or later than initially scheduled?", a: "Later" },
+      { q: "What valuable yellow metal is frequently used in necklaces and accessories?", a: "Gold" },
+      { q: "What do we call the person who helps sick people and prescribes medicine?", a: "A doctor" },
+      { q: "If something is extremely small, is it tiny or enormous?", a: "Tiny" },
+      { q: "What do we call the sport of riding a horse?", a: "Horse riding" },
+      { q: "What animals produce wool?", a: "Sheep" },
+      { q: "What do we call a vehicle that travels on two wheels and is powered by pedaling?", a: "A bicycle" },
+      { q: "What do we call the sheets of paper in a book?", a: "Pages" },
+      { q: "If food smells bad and looks green, is it fresh or rotten?", a: "Rotten" },
+      { q: "What do we call someone who works in a hospital and helps doctors take care of patients?", a: "A nurse" },
+      { q: "If a ball bounces when dropped, is it made of rubber or glass?", a: "Rubber" },
+      { q: "What do we call a room in a hospital where operations are performed?", a: "An operating room" },
+      { q: "If a person is very tall, are they short or towering?", a: "Tower" },
+      { q: "What do we call the tall green plants in a forest?", a: "Trees" },
+      { q: "What is the color of a ripe tomato?", a: "Red" },
+      { q: "What do we call a young cat?", a: "A kitten" },
+      { q: "What do we call the sport of sliding stones on ice toward a target?", a: "Curling" },
+    ]
+  },
+  partB: {
+    title: "Part B · 复述句",
+    groups: [
+      { title: "第一组", items: [
+        "If no lantern is available, we'll have to use a flashlight.",
+        "I just wanted to confirm if you could complete this by 8 PM.",
+        "Does anyone have difficulty understanding this illustration?",
+        "Send me that report once you're done please.",
+        "Always remember to bring your jacket.",
+        "The long winding road leads past an exclusive beach.",
+        "Train sounds can be heard from anywhere in the city.",
+        "The gardeners mowed the dry grass while I was away.",
+        "I can't hear this voice message.",
+        "Priority is provided to dormitory residents.",
+        "Would you kindly explain all the safety concerns?",
+        "My proposal was rejected because the data weren't reliable.",
+        "The tea left stains on the couch.",
+        "Would you mind carrying those for me?",
+        "Do you have an idea how long the sales report is supposed to be?",
+        "The explanation does not make sense to me at all."
+      ]},
+      { title: "第二组", items: [
+        "We shouldn't cause you any inconvenience.",
+        "As for our previous discussion, forget it.",
+        "How much time will it take to get the latest edition?",
+        "What are you looking at?",
+        "During their trip across the nation, they often rested under the stars.",
+        "You should review all the procedures in the manual before starting the project.",
+        "You have my assurance that we'll get this edited in no time.",
+        "Do you have any specific requests or preferences?",
+        "Emily added some photos of her newborn granddaughter.",
+        "Kayla never buys clothes that cost over $20.",
+        "Would you mind giving us a ride?",
+        "How many attendees do you expect to be present at the conference?",
+        "I'll need to go to the pastry shop to buy desserts for tonight's dinner.",
+        "Could you check with the neighbors and ask if their electricity is out too?",
+        "Have you got the tracking number for that parcel?",
+        "If you encounter any difficulties, please reach out to our customer service assistants."
+      ]},
+      { title: "第三组", items: [
+        "I'll pick up some groceries on my way home from work.",
+        "I haven't seen such a beautiful sunset in a long time.",
+        "Can you remember many details of your childhood?",
+        "The charity run raised over $15,000 for the children's hospital.",
+        "The train is running about fifteen minutes behind schedule.",
+        "I think the most challenging part of the exam is the listening section.",
+        "Do you think it's safe to carry such a large amount of cash?",
+        "The workshop on public speaking starts at 10 AM sharp.",
+        "What time do you like to eat dinner?",
+        "After January 1st, the rates will be lowered considerably.",
+        "The food at the wedding reception was absolutely delicious.",
+        "Have you visited our website?",
+        "It's good to be here again.",
+        "He volunteers at the local food bank every other Saturday.",
+        "The community garden is open to anyone who wants to grow vegetables.",
+        "The quarterly report needs to be reviewed by the end of the week."
+      ]},
+      { title: "第四组", items: [
+        "She mentioned that the conference will be streamed online this year.",
+        "She was elected class president by a large majority.",
+        "She reorganized the filing system to make it easier to find documents.",
+        "She couldn't attend the graduation because she was traveling.",
+        "He arrived at the airport two hours early just to be safe.",
+        "There's a road closure on the highway this weekend.",
+        "They've decided to renovate the kitchen before selling the house.",
+        "I think the most important thing is to stay positive.",
+        "She suggested that we meet at the park instead of the office.",
+        "The exhibition features works from over 30 different artists.",
+        "The school play is scheduled for Friday evening in the main hall.",
+        "After January 1st, the rates will be lowered considerably.",
+        "Sarah was hooked on the mystery story, and stayed up reading well past midnight.",
+        "Drop in and visit us at our new, convenient location.",
+        "She accidentally poured orange juice into her cereal instead of milk.",
+        "The hotel charged us extra for late checkout."
+      ]}
+    ]
+  },
+  partC: {
+    title: "Part C · 对话问答",
+    items: [
+      { q: "Why does the man prefer not to travel by plane?", a: "He gets sick from flying" },
+      { q: "What does the woman like about her present flat?", a: "Accessibility to cafes" },
+      { q: "At what time is the woman required to return the cycling gear?", a: "By eight on weekends" },
+      { q: "What do the speakers plan to watch on Saturday?", a: "A new comedy movie" },
+      { q: "In what location did this conversation take place?", a: "A restaurant" },
+      { q: "What is the issue in the restaurant?", a: "The air conditioners are not working" },
+      { q: "Why did the woman stay awake until late?", a: "Playing a video game competition" },
+      { q: "What flavor cake did the man order?", a: "Red velvet" },
+      { q: "What was the issue with the audio from the TV?", a: "The volume was set too low" },
+      { q: "Why did the taste seem familiar to the woman?", a: "It was her grandmother's recipe" },
+      { q: "Why can't the concert ticket be booked?", a: "It is sold out" },
+      { q: "What makes the woman enjoy her Art class so much?", a: "Personal attention from the teacher" },
+      { q: "When is the half-marathon?", a: "In October" },
+      { q: "What might be wrong with the air conditioner?", a: "The filter hasn't been changed" },
+      { q: "What problem is the woman having with her laptop?", a: "It keeps shutting down randomly" },
+      { q: "Why was the man up until 3 AM?", a: "He was finishing his assignments" },
+      { q: "What does the woman need to repair?", a: "Her boot. The heel broke off." },
+      { q: "What is the man worried about?", a: "The iron still plugged in" },
+    ]
+  },
+  partD: {
+    title: "Part D · 短文问答",
+    stories: [
+      { title: "故事1 · Eva & Isabella（下雨天孩子玩耍，茶洒了）", items: [
+        { q: "Why did Eva invite Isabella over?", a: "For their kids to play inside" },
+        { q: "How did the tea end up spilling?", a: "Isabella's son jumped on the couch and spilled it" },
+        { q: "What did Isabella recommend using to address the tea stain?", a: "Vinegar" }
+      ]},
+      { title: "故事2 · Nathan 学做饭（香肠爆炸）", items: [
+        { q: "Why did Nathan order takeout for every meal?", a: "He didn't know how to cook" },
+        { q: "What was the first thing Nathan chose to cook?", a: "Sausages" },
+        { q: "Why did Nathan need to clean the microwave?", a: "The sausages blew up" }
+      ]},
+      { title: "故事3 · Kelly 海边野餐（青少年放音乐）", items: [
+        { q: "How did Kelly feel before the teenagers arrived?", a: "Calm and content" },
+        { q: "Why was Kelly irritated?", a: "The teenagers played loud music near her" },
+        { q: "What made Kelly relaxed again?", a: "The speakers ran out of batteries" }
+      ]},
+      { title: "故事4 · Austin 辣拉面（辣椒粉盖子掉了）", items: [
+        { q: "What occurred during Austin's cooking?", a: "Too much chili powder fell in" },
+        { q: "For whom was Austin cooking?", a: "His roommates" },
+        { q: "How did the roommates react?", a: "They pretended it wasn't spicy" }
+      ]},
+      { title: "故事5 · Mrs. Wong 免费合唱团", items: [
+        { q: "Why did Mrs. Wong start the choir?", a: "For students who couldn't afford music lessons" },
+        { q: "Where did the choir perform?", a: "At community events and nursing homes" },
+        { q: "What happened at the national music festival?", a: "They received a standing ovation" }
+      ]},
+      { title: "故事6 · 小镇洪水", items: [
+        { q: "How long did it rain before the flooding?", a: "Three days" },
+        { q: "What was the local school used for?", a: "A temporary shelter" },
+        { q: "What did the government build afterward?", a: "A new drainage system" }
+      ]}
+    ]
+  },
+  partF: {
+    title: "Part F · 自由问答",
+    items: [
+      { q: "出门玩 vs 待在家", a: "I usually prefer staying at home at night. First, it feels safer and more relaxed. I enjoy watching movies or reading. Second, going out at night can be intimidating. So I feel more comfortable at home." },
+      { q: "早睡 vs 熬夜", a: "I usually prefer going to bed early. First, it helps me get enough sleep and wake up feeling refreshed. Second, a good night's sleep is important for overall well-being and makes me more productive during the day." },
+      { q: "马拉松准备（两件事）", a: "First, start training gradually. Begin by jogging regularly to build endurance. Second, maintain a balanced diet with plenty of carbohydrates, protein, and hydration." },
+      { q: "了解其他文化（两件事）", a: "First, try tasting different cuisines from various countries. Food provides insights into traditions and customs. Second, watch documentaries or read books about different cultures." },
+      { q: "电脑改变生活", a: "Generally speaking, the computer has made our life simpler. First, communication is faster and cheaper. In the past we used mail or calls, but now we have email and chat apps. Second, studying is easier. In the past we only got knowledge from books, now we can ask questions to people all over the world. But the precondition is you know how to use it." },
+      { q: "家长替孩子选食物", a: "Generally speaking, parents should choose food for children. First, children only choose what they like, such as sugar or fried food, which is not good for their health. Second, parents provide food that is easy to digest. At last, parents should give children options among healthy food." },
+      { q: "付费让孩子干活", a: "I would not pay children for finishing their tasks. First, if the work belongs to the children, like wearing clothes, they should do it themselves to learn independence. Second, payment is one kind of benefit, but I would let children make their own choice." },
+      { q: "自驾游 vs 导游", a: "I would like to explore new places by myself. First, it gives me freedom. I can go anywhere I want and stop for delicious food anytime. Second, I like discovering things by myself. It gives me a sense of pride. Third, it is cheaper than hiring a guide." },
+      { q: "学习时安静 vs 噪音", a: "I prefer to have some noise in the room when I'm studying. First, a completely quiet environment makes me sleepy. Second, regular noise around me keeps me alert." },
+    ]
+  }
+};
+
+// Chinese explanations (朗读时用英文原文；讲解用中文解析)
+const EXP = {
+  partA: [
+    "问：应聘工作的人叫什么？答案是 job applicant（求职者）。applicant 重音在中间的 PLI，是商务高频词。",
+    "问：什么器官给全身供血？答案是 the heart（心脏）。注意 heart 不是 head。",
+    "问：提高库存水平会降低缺货风险，还是增加仓储成本？答案是两者都会（Both）。这是供应链的权衡（trade-off）概念。",
+    "问：早上把面包烤得焦脆的电器是什么？答案是 a toaster（烤面包机）。易混词：roast 是烤肉。",
+    "问：由细小岩石颗粒形成、通常在沙滩上的物质？答案是 sand（沙子）。",
+    "问：热带气候的旱季叫什么？答案是 the dry season（旱季）。雨季是 rainy/wet season。",
+    "问：以长鼻子和大耳朵著称的动物？答案是 an elephant（大象）。",
+    "问：白天照看小孩的人？答案是 a babysitter（临时保姆）。",
+    "问：保证供应商按预定价格在一段时间内供货的合同？答案是 a fixed-price contract（固定价格合同），商务必背词。",
+    "问：水冷冻后变成什么？答案是 ice（冰）。",
+    "问：酿蜜的小昆虫？答案是 a bee（蜜蜂）。",
+    "问：腿中间的关节？答案是 the knee（膝盖），注意 k 不发音。",
+    "问：体育锦标赛冠军队伍获得的大金属杯？答案是 a trophy（奖杯）。",
+    "问：晚上睡觉用的家具？答案是 a bed（床）。",
+    "问：显示公司在某一时点资产、负债和权益的财务报表？答案是 a balance sheet（资产负债表），三大报表之一。",
+    "问：往饮料里加冰，饮料变热还是变凉？答案是 colder（更凉）。",
+    "问：给水果增甜用糖还是胡椒？答案是 sugar（糖）。",
+    "问：去除衣服褶皱的电器？答案是 an iron（熨斗），iron 同时也指铁。",
+    "问：着火时的气味？答案是 smoke（烟）。",
+    "问：标准沙发有几条腿？答案是 four（四条）。",
+    "问：画画、做雕塑的人统称？答案是 artists（艺术家）。",
+    "问：飞行员是开喷气机还是开火车？答案是 fly a jet（开喷气机）。",
+    "问：坐火车需要购买什么？答案是 a train ticket（火车票）。",
+    "问：东、南、西之后的第四个方向？答案是 north（北）。顺序：东南西北 east, south, west, north。",
+    "问：餐厅里食物和饮料的清单？答案是 a menu（菜单）。",
+    "问：订日报，一周收几期？答案是 seven（七期），每天一期，考乘法常识。",
+    "问：对幽默事物的声音反应？答案是 laughter（笑声），laugh 的名词形式。",
+    "问：勺子和盘子哪个大？答案是 a plate（盘子）。",
+    "问：海洋和湖哪个大？答案是 an ocean（海洋）。ocean > sea > lake。",
+    "问：黄、红、橙属于什么类别？答案是 colors（颜色）。",
+    "问：Alex 推迟了活动，是更早还是更晚举行？答案是 later（更晚）。delay = 推迟，反义：bring forward 提前。",
+    "问：常用于项链的贵重黄色金属？答案是 gold（黄金）。",
+    "问：帮病人看病开药的人？答案是 a doctor（医生）。",
+    "问：非常小是 tiny 还是 enormous？答案是 tiny（极小）。enormous 是巨大，正好相反。",
+    "问：骑马的运动叫什么？答案是 horse riding（骑马）。",
+    "问：产羊毛的动物？答案是 sheep（绵羊）。发音注意与 ship（船）区分：sheep 长音。",
+    "问：两轮、脚踩驱动的交通工具？答案是 a bicycle（自行车）。",
+    "问：书里的一张张纸叫什么？答案是 pages（页）。",
+    "问：食物闻着臭、看着发绿，是新鲜还是腐烂？答案是 rotten（腐烂的）。",
+    "问：在医院协助医生照顾病人的人？答案是 a nurse（护士）。",
+    "问：球落地能弹起，是橡胶还是玻璃？答案是 rubber（橡胶）。",
+    "问：医院里做手术的房间？答案是 an operating room（手术室）。",
+    "问：人非常高，是 towering 还是 short？答案是 towering（高耸），tower 塔 → 像塔一样高。",
+    "问：森林里高大的绿色植物？答案是 trees（树）。",
+    "问：成熟番茄的颜色？答案是 red（红色）。",
+    "问：小猫叫什么？答案是 a kitten（幼猫）。",
+    "问：在冰上把石头滑向目标的运动？答案是 curling（冰壶）。"
+  ],
+  partB: [
+    [ // 组1
+      "如果没有灯笼（lantern），我们就只好用手电筒（flashlight）。",
+      "我只是想确认一下，你能不能在晚上八点前完成。confirm = 确认。",
+      "有人觉得这幅插图（illustration）难以理解吗？difficulty understanding = 难以理解。",
+      "你做完之后，请把报告发给我。once you're done = 一做完。",
+      "永远记得带上你的外套。",
+      "这条蜿蜒（winding）的长路经过一片高级（exclusive）海滩。",
+      "火车的声音在城市的任何地方都能听到。",
+      "我不在的时候，园丁们修剪（mow）了干草。",
+      "我听不见这条语音留言。",
+      "优先权提供给宿舍（dormitory）住户。Priority is provided to... 是倒装强调句式。",
+      "能否请您解释一下所有的安全隐患？Would you kindly... 是礼貌请求。",
+      "我的提案（proposal）被拒绝了，因为数据不可靠（reliable）。注意 data were 正式用法。",
+      "茶在沙发上留下了污渍（stain）。leave stains on = 留下污渍。",
+      "你介意帮我拿一下那些东西吗？Would you mind + doing。",
+      "你知道销售报告应该写多长吗？be supposed to = 应该。",
+      "这个解释对我来说完全讲不通。make sense = 说得通。"
+    ],
+    [ // 组2
+      "我们不应该给您造成任何不便（inconvenience）。",
+      "至于我们之前的那次讨论，忘了吧。As for... = 至于。",
+      "拿到最新版本（edition）需要多长时间？",
+      "你在看什么呢？",
+      "他们环国旅行时，常常在星空下休息。",
+      "开始这个项目之前，你应该查阅手册（manual）里的所有流程（procedures）。",
+      "我向你保证（assurance），我们很快就能把它改好。in no time = 立刻。",
+      "您有什么具体的要求或偏好吗（preferences）？",
+      "Emily 添加了几张她新生孙女的照片。newborn = 新生的。",
+      "Kayla 从来不买超过二十美元的衣服。cost over $20 = 价格超过20美元。",
+      "你介意让我们搭个车吗？give us a ride = 载我们一程。",
+      "你预计有多少人出席（attendees）这次会议？be present at = 出席。",
+      "我得去糕点店（pastry shop）买今晚晚餐吃的甜点。",
+      "你能问问邻居他们家是不是也停电了吗？electricity is out = 停电。",
+      "你拿到那个包裹（parcel）的快递单号（tracking number）了吗？",
+      "如果你遇到任何困难，请联系我们的客服助理。encounter = 遭遇，reach out to = 联系。"
+    ],
+    [ // 组3
+      "我下班回家的路上会顺路买点菜。pick up = 顺路买，on my way home = 回家路上。",
+      "我已经很久没见过这么美的日落了。",
+      "你能记得童年的许多细节吗？childhood = 童年。",
+      "这场慈善跑为儿童医院筹集了超过一万五千美元。raise money = 筹款。",
+      "火车大约晚点十五分钟。behind schedule = 晚点，反义：on time。",
+      "我觉得这场考试最难的部分是听力。challenging = 有挑战性的。",
+      "你觉得带这么大一笔现金安全吗？a large amount of cash = 大额现金。",
+      "公众演讲研讨会十点整开始。sharp = 整（点），如 10 AM sharp。",
+      "你喜欢几点吃晚饭？",
+      "一月一日之后，费率将大幅下调。considerably = 相当大地。",
+      "婚宴（wedding reception）上的食物非常美味。reception = 宴会/ reception 也有前台意思。",
+      "你访问过我们的网站吗？",
+      "又来到这里真好。It's good to be here again.",
+      "他每隔一个周六去当地的食品银行（food bank）做志愿者。every other Saturday = 每隔一个周六。",
+      "社区菜园对任何想种蔬菜的人开放。community garden = 社区菜园。",
+      "季度报告需要在周末之前审阅完毕。quarterly = 季度的。"
+    ],
+    [ // 组4
+      "她提到今年的会议将在线直播。stream online = 在线直播。",
+      "她以压倒性多数（a large majority）当选班长。elect = 选举。",
+      "她重新整理了归档系统，让文件更容易找到。filing system = 归档系统。",
+      "她没能参加毕业典礼，因为她当时在旅行。graduation = 毕业典礼。",
+      "他为了保险起见，提前两个小时到了机场。just to be safe = 以防万一。",
+      "这周末高速公路封路。road closure = 道路封闭。",
+      "他们决定在卖房之前先翻新（renovate）厨房。",
+      "我认为最重要的是保持积极（stay positive）。",
+      "她建议我们在公园而不是办公室见面。suggest that we meet = 虚拟语气建议。",
+      "这次展览展出了三十多位艺术家的作品。feature = 展出，works = 作品。",
+      "校园剧定于周五晚上在大礼堂（main hall）上演。",
+      "一月一日之后，费率将大幅下调。（与第三组第10句相同）",
+      "Sarah 被这个悬疑故事迷住了（hooked on），一直读到半夜之后。well past midnight = 远过半夜。",
+      "欢迎来我们的新店坐坐，位置很方便。Drop in = 顺便来访。",
+      "她不小心把橙汁倒进了麦片里，而不是牛奶。accidentally = 不小心地。",
+      "酒店因为延迟退房多收了我们的钱。charge extra for = 因…额外收费。"
+    ]
+  ],
+  partC: [
+    "男士不愿坐飞机，因为他一飞就晕（gets sick from flying）。听到 sick / flying 即答案。",
+    "女士喜欢现在公寓的点是：附近咖啡馆多、方便（accessibility to cafes）。accessibility = 便利性。",
+    "归还骑行装备的时间：周末八点前（by eight on weekends）。注意 by + 时间 = 截止。",
+    "周六他们打算看一部新喜剧电影（a new comedy movie）。comedy = 喜剧。",
+    "对话发生的地点：餐厅（a restaurant）。听到点餐、餐桌类场景词即可判断。",
+    "餐厅的问题是空调不工作（air conditioners are not working）。",
+    "女士熬夜是因为打游戏比赛（video game competition）。",
+    "男士订的蛋糕口味：红丝绒（red velvet）。",
+    "电视音频的问题是音量设得太低（volume was set too low）。",
+    "味道觉得熟悉，因为是祖母的配方（grandmother's recipe）。recipe = 食谱/配方。",
+    "音乐会票订不了，因为卖光了（sold out）。",
+    "女士喜欢美术课是因为老师的个别关注（personal attention from the teacher）。",
+    "半程马拉松在十月（October）。half-marathon = 半马。",
+    "空调可能的问题是滤网一直没换（the filter hasn't been changed）。filter = 滤网。",
+    "笔记本电脑的问题：随机自动关机（keeps shutting down randomly）。",
+    "男士熬夜到凌晨三点，因为他在赶作业（finishing his assignments）。",
+    "女士要修的是靴子——鞋跟断了（her boot, the heel broke off）。heel = 鞋跟。",
+    "男士担心的是熨斗还插着电（the iron still plugged in）。plug in = 插电。"
+  ],
+  partD: [
+    [ // 故事1
+      "故事回顾：下雨天 Eva 请 Isabella 带孩子来家里玩（for their kids to play inside）。为什么请 → 因为下雨，孩子只能室内玩。",
+      "茶是怎么洒的：Isabella 的儿子在沙发上跳，打翻了茶（jumped on the couch and spilled it）。",
+      "Isabella 建议用醋（vinegar）去茶渍——结果反而更糟。考点：vinegar 醋。"
+    ],
+    [ // 故事2
+      "Nathan 每顿都点外卖，因为他不会做饭（didn't know how to cook）。",
+      "Nathan 选择做的第一样东西：香肠（sausages）。",
+      "Nathan 要清理微波炉，因为香肠在微波炉里炸了（the sausages blew up）。blow up = 爆炸。"
+    ],
+    [ // 故事3
+      "青少年来之前 Kelly 的心情：平静满足（calm and content）。",
+      "Kelly 被激怒的原因：青少年在她旁边大声放音乐（played loud music near her）。",
+      "让 Kelly 重新放松下来的原因：音响没电了（the speakers ran out of batteries）。run out of = 耗尽。"
+    ],
+    [ // 故事4
+      "Austin 做饭时发生的事：太多辣椒粉掉进去了（too much chili powder fell in）。chili powder = 辣椒粉。",
+      "Austin 是给室友做的饭（for his roommates）。",
+      "室友的反应：假装不辣（they pretended it wasn't spicy）。pretend = 假装。"
+    ],
+    [ // 故事5
+      "Mrs. Wong 创办合唱团的原因：为了付不起音乐课的学生（couldn't afford music lessons）。",
+      "合唱团在哪里演出：社区活动和养老院（community events and nursing homes）。",
+      "在全国音乐节上发生了什么：他们获得了全场起立鼓掌（a standing ovation）。"
+    ],
+    [ // 故事6
+      "洪水前下了多久的雨：三天（three days）。",
+      "当地学校被用作：临时避难所（a temporary shelter）。",
+      "政府事后修建了：新的排水系统（a new drainage system）。drainage = 排水。"
+    ]
+  ],
+  partF: [
+    "话题：晚上出门玩还是待在家。思路：选在家 —— First 安全放松，可以看电影读书；Second 深夜外出让人紧张；So 在家更舒服。收尾句：So I feel more comfortable at home.",
+    "话题：早睡还是熬夜。思路：选早睡 —— First 保证充足睡眠、起床精神；Second 好睡眠让白天更高效。关键词：refreshed（精神焕发）、productive（高效的）。",
+    "话题：马拉松准备两件事。思路：First 循序渐进训练（start training gradually，从慢跑开始）；Second 均衡饮食（balanced diet，碳水+蛋白质+补水）。关键词：endurance 耐力、hydration 补水。",
+    "话题：了解其他文化的两件事。思路：First 品尝各国菜（cuisine 菜系），食物是了解传统的窗口；Second 看纪录片或读书。",
+    "话题：电脑如何改变生活。思路：总说让生活更简单 —— First 通讯更快更便宜（从书信电话到邮件聊天软件）；Second 学习更容易（可以向全世界的人提问）；But 前提是你会用它。",
+    "话题：家长该不该替孩子选食物。思路：应该 —— First 孩子只挑糖和油炸食品，不利健康；Second 家长能提供易消化食物；At last 应给孩子健康范围内的选择权。",
+    "话题：要不要付钱让孩子干活。思路：不付 —— First 自己的事（如穿衣）应自己做，学会独立（independence）；Second 报酬是一种好处，但应让孩子自己选择。",
+    "话题：自驾游还是请导游。思路：自驾 —— First 自由（随时停车吃美食）；Second 自己发现有成就感（a sense of pride）；Third 比请导游便宜。",
+    "话题：学习时安静还是有噪音。思路：要有点噪音 —— First 完全安静容易犯困（makes me sleepy）；Second 规律的噪音让我保持清醒（keeps me alert）。"
+  ]
+};
+
+// ---------- state ----------
+let currentPart = 'partA';
+let playing = false;
+let paused = false;
+let token = 0;          // cancellation token
+let repeat = false;
+let currentIndex = 0;   // index into flat visible list
+let hideAnswers = localStorage.getItem('versant-maskMode') !== 'false'; // default: Q&A masked
+const results = {};      // flatIndex -> 'ok' | 'near' | 'bad' (voice-answer results of current round)
+let playIndices = null;  // sequence of flat indices to play (null = all)
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function getVoices() {
+  return speechSynthesis.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+}
+let voices = [];
+function refreshVoices() {
+  voices = getVoices();
+  const sel = $('voiceSel');
+  sel.innerHTML = '';
+  if (voices.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = '(未检测到英语语音，将使用默认)';
+    sel.appendChild(opt);
+    return;
+  }
+  const preferred = ['Google US English', 'Samantha', 'Google UK English Female', 'Aaron', 'Karen', 'Daniel'];
+  voices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    let label = v.name + ' (' + v.lang + ')';
+    opt.textContent = label;
+    sel.appendChild(opt);
+  });
+  for (const name of preferred) {
+    const idx = voices.findIndex(v => v.name === name);
+    if (idx >= 0) { sel.value = String(idx); break; }
+  }
+}
+speechSynthesis.onvoiceschanged = refreshVoices;
+refreshVoices();
+
+function speak(text) {
+  return new Promise((resolve, reject) => {
+    const u = new SpeechSynthesisUtterance(text);
+    const v = voices[$('voiceSel').value];
+    if (v) u.voice = v;
+    u.lang = v ? v.lang : 'en-US';
+    u.rate = parseFloat($('rate').value);
+    u.onend = () => resolve();
+    u.onerror = e => e.error === 'interrupted' || e.error === 'canceled' ? resolve() : reject(e);
+    speechSynthesis.speak(u);
+  });
+}
+
+async function waitWhilePaused(myToken) {
+  while (paused && myToken === token) await sleep(100);
+}
+
+// split long text into sentence chunks to avoid Chrome ~15s cutoff
+function splitSentences(text) {
+  return text.match(/[^.!?]+[.!?]+["']?\s*/g) || [text];
+}
+
+// ---------- flat list per part ----------
+function buildFlat(part, scope) {
+  const flat = [];
+  if (part === 'partA' || part === 'partC') {
+    DATA[part].items.forEach((it, i) => flat.push({ kind: 'qa', q: it.q, a: it.a, idx: i, exp: EXP[part][i] }));
+  } else if (part === 'partB') {
+    const groups = scope === 'all' ? DATA.partB.groups : [DATA.partB.groups[parseInt(scope)]];
+    groups.forEach((g, gi) => g.items.forEach((s, i) => {
+      const gIdx = scope === 'all' ? gi : parseInt(scope);
+      flat.push({ kind: 'sentence', text: s, groupTitle: g.title, idx: i, exp: EXP.partB[gIdx][i] });
+    }));
+  } else if (part === 'partD') {
+    DATA.partD.stories.forEach((st, si) => st.items.forEach((it, i) => flat.push({ kind: 'qa', q: it.q, a: it.a, storyTitle: st.title, idx: i, exp: EXP.partD[si][i] })));
+  } else if (part === 'partF') {
+    DATA.partF.items.forEach((it, i) => flat.push({ kind: 'qa', q: it.q, a: it.a, idx: i, exp: EXP.partF[i] }));
+  }
+  return flat;
+}
+
+function currentFlat() {
+  return buildFlat(currentPart, $('scopeSel').value);
+}
+
+// ---------- rendering ----------
+const PART_KEYS = ['partA', 'partB', 'partC', 'partD', 'partF'];
+
+function renderTabs() {
+  const tabs = $('tabs');
+  tabs.innerHTML = '';
+  PART_KEYS.forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (k === currentPart ? ' active' : '');
+    b.textContent = DATA[k].title;
+    b.onclick = () => { stop(); currentPart = k; currentIndex = 0; playIndices = null; resetResults(); renderScope(); renderList(); refreshStats(); };
+    tabs.appendChild(b);
+  });
+}
+
+function renderScope() {
+  const sel = $('scopeSel');
+  sel.innerHTML = '';
+  if (currentPart === 'partB') {
+    [['all', '全部 4 组'], ['0', '第一组'], ['1', '第二组'], ['2', '第三组'], ['3', '第四组']]
+      .forEach(([v, l]) => { const o = document.createElement('option'); o.value = v; o.textContent = l; sel.appendChild(o); });
+  }
+  sel.style.display = currentPart === 'partB' ? '' : 'none';
+}
+
+function renderList() {
+  const list = $('list');
+  list.innerHTML = '';
+  const flat = currentFlat();
+  let lastGroup = null;
+  flat.forEach((it, i) => {
+    const gt = it.groupTitle || it.storyTitle;
+    if (gt && gt !== lastGroup) {
+      lastGroup = gt;
+      const h = document.createElement('div');
+      h.className = it.groupTitle ? 'group-title' : 'story-title';
+      h.textContent = gt;
+      list.appendChild(h);
+    }
+    const div = document.createElement('div');
+    div.className = 'item' + (i === currentIndex ? ' current' : '');
+    div.dataset.i = i;
+    const masked = hideAnswers; // all items (Q&A + sentences) are maskable
+    let inner = '';
+    if (it.kind === 'sentence') {
+      inner = '<div class="num">' + (it.idx + 1) + '</div><div class="body">'
+        + '<div class="q' + (masked ? ' masked' : '') + '"><span class="txt" title="点击朗读">' + esc(it.text) + '</span><span class="eye" title="显示/隐藏">' + (masked ? '👁' : '🙈') + '</span><span class="mic" title="语音回答">🎙</span></div>'
+        + '<div class="voice-result"></div>'
+        + '<div class="type-area" style="display:none"><input type="text" placeholder="输入英文答案，回车提交"><button class="btn-xs type-submit">✓</button></div>'
+        + '<div class="explain-bar"><button class="btn-xs explain-btn">💡 讲解</button> <button class="btn-xs type-btn">✏️ 手写</button></div><div class="explain-box"></div></div>';
+    } else {
+      inner = '<div class="num">' + (it.idx + 1) + '</div><div class="body">'
+        + '<div class="q' + (masked ? ' masked' : '') + '"><span class="txt" title="点击朗读">' + esc(it.q) + '</span><span class="eye" title="显示/隐藏">' + (masked ? '👁' : '🙈') + '</span></div>'
+        + '<div class="a' + (masked ? ' masked' : '') + '"><span class="txt" title="点击朗读">' + esc(it.a) + '</span><span class="eye" title="显示/隐藏">' + (masked ? '👁' : '🙈') + '</span><span class="mic" title="语音回答">🎙</span></div>'
+        + '<div class="voice-result"></div>'
+        + '<div class="type-area" style="display:none"><input type="text" placeholder="输入英文答案，回车提交"><button class="btn-xs type-submit">✓</button></div>'
+        + '<div class="explain-bar"><button class="btn-xs explain-btn">💡 讲解</button> <button class="btn-xs type-btn">✏️ 手写</button></div><div class="explain-box"></div></div>';
+    }
+    div.innerHTML = inner;
+    div.onclick = () => { currentIndex = i; highlight(); play(); };
+    // eye icon: toggle visibility; text click: reveal + speak (explanation)
+    const qEl = div.querySelector('.q');
+    const aEl = div.querySelector('.a');
+    const wire = (el, text) => {
+      if (!el) return;
+      el.onclick = e => {
+        e.stopPropagation();
+        if (e.target.classList.contains('eye')) {
+          el.classList.toggle('masked');
+          const eye = el.querySelector('.eye');
+          eye.textContent = el.classList.contains('masked') ? '👁' : '🙈';
+        } else if (e.target.classList.contains('mic')) {
+          // handled by mic handler
+        } else {
+          // text click: read aloud only — visibility is controlled solely by the eye button
+          explain(text);
+        }
+      };
+    };
+    if (it.kind === 'sentence') {
+      wire(qEl, it.text);
+    } else {
+      wire(qEl, it.q);
+      wire(aEl, it.a);
+    }
+    // mic: voice answer with auto-scoring against the hidden expected text
+    const micEl = div.querySelector('.mic');
+    const resultEl = div.querySelector('.voice-result');
+    if (micEl && resultEl && SR_SUPPORTED) {
+      const expected = it.kind === 'sentence' ? it.text : it.a;
+      micEl.onclick = e => { e.stopPropagation(); voiceAnswer(micEl, expected, resultEl, i); };
+    } else if (micEl) {
+      micEl.style.display = 'none';
+    }
+    // 💡 explanation button: show Chinese analysis + speak it with a Chinese voice
+    const expBtn = div.querySelector('.explain-btn');
+    const expBox = div.querySelector('.explain-box');
+    if (expBtn && expBox && it.exp) {
+      expBtn.onclick = e => {
+        e.stopPropagation();
+        if (expBox.textContent) {
+          expBox.textContent = '';
+          stop();
+        } else {
+          expBox.textContent = it.exp;
+          speakCN(it.exp);
+        }
+      };
+    } else if (expBtn) {
+      expBtn.style.display = 'none';
+    }
+    // ✏️ typed answer: input box + same auto-grading as voice
+    const typeBtn = div.querySelector('.type-btn');
+    const typeArea = div.querySelector('.type-area');
+    if (typeBtn && typeArea) {
+      const input = typeArea.querySelector('input');
+      const submit = typeArea.querySelector('.type-submit');
+      const expected = it.kind === 'sentence' ? it.text : it.a;
+      typeBtn.onclick = e => {
+        e.stopPropagation();
+        const show = typeArea.style.display === 'none';
+        typeArea.style.display = show ? 'flex' : 'none';
+        if (show) input.focus();
+      };
+      const doSubmit = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        gradeAnswer(text, expected, resultEl, i);
+      };
+      submit.onclick = e => { e.stopPropagation(); doSubmit(); };
+      input.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') doSubmit(); };
+    }
+    list.appendChild(div);
+  });
+}
+
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function highlight() {
+  document.querySelectorAll('.item').forEach(el => {
+    const isCur = parseInt(el.dataset.i) === currentIndex;
+    el.classList.toggle('current', isCur);
+    if (isCur) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+}
+
+// ---------- speech recognition (voice answer) ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SR_SUPPORTED = !!SR;
+let recogActive = null;
+
+const NUMWORDS = { zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', ten: '10', eleven: '11', twelve: '12', thirteen: '13', fourteen: '14', fifteen: '15', sixteen: '16', seventeen: '17', eighteen: '18', nineteen: '19', twenty: '20' };
+const STOPWORDS = new Set(['a', 'an', 'the', 'is', 'are', 'to', 'of', 'and']);
+
+function normWords(s) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9'\s]/g, ' ').replace(/\s+/g, ' ').trim().split(' ')
+    .filter(Boolean).map(w => NUMWORDS[w] || w).filter(w => !STOPWORDS.has(w));
+}
+
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  if (Math.abs(m - n) > 1) return 2;
+  const dp = Array.from({ length: m + 1 }, (_, i) => i);
+  for (let j = 1; j <= n; j++) {
+    let prev = dp[0]; dp[0] = j;
+    for (let i = 1; i <= m; i++) {
+      const tmp = dp[i];
+      dp[i] = Math.min(dp[i] + 1, dp[i - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = tmp;
+    }
+  }
+  return dp[m];
+}
+
+function wordsMatch(w, x) {
+  if (w === x) return true;
+  if (w.length >= 4 && x.length >= 4 && lev(w, x) <= 1) return true;
+  // plural / tense stems: applicants ~ applicant, goes ~ go
+  const stem = s => s.replace(/(ies|es|s)$/, '');
+  return stem(w) === stem(x);
+}
+
+function scoreAnswer(heard, expected) {
+  const h = normWords(heard), e = normWords(expected);
+  if (!e.length) return 1;
+  if (!h.length) return 0;
+  let hit = 0;
+  for (const w of e) {
+    if (h.some(x => wordsMatch(w, x))) hit++;
+  }
+  return hit / e.length;
+}
+
+// shared grading: verdict UI + stats recording (used by both voice and typed answers)
+function gradeAnswer(heard, expected, resultEl, flatIdx) {
+  const score = scoreAnswer(heard, expected);
+  let cls, label;
+  if (!heard.trim()) { cls = 'bad'; label = '✗ 未识别到内容'; }
+  else if (score >= 0.7) { cls = 'ok'; label = '✓ 正确 (' + Math.round(score * 100) + '%)'; }
+  else if (score >= 0.4) { cls = 'near'; label = '△ 接近 (' + Math.round(score * 100) + '%)'; }
+  else { cls = 'bad'; label = '✗ 不对 (' + Math.round(score * 100) + '%)'; }
+  if (flatIdx !== undefined) results[flatIdx] = (cls === 'ok' ? 'ok' : cls === 'near' ? 'near' : 'bad');
+  resultEl.innerHTML = '<span class="heard-text">你: ' + esc(heard.trim() || '(无)') + '</span><span class="verdict ' + cls + '">' + label + '</span>';
+  refreshStats();
+}
+
+function voiceAnswer(micEl, expected, resultEl, flatIdx) {
+  stop();
+  if (recogActive) { const r = recogActive; try { r.stop(); } catch (e) { /* ignore */ } return; } // second click: end & grade
+  micEl.classList.add('listening');
+  const silenceSec = Math.max(1, parseFloat($('silence') ? $('silence').value : 2.5));
+  resultEl.innerHTML = '<span class="heard-text">🎤 正在听…停顿 ' + silenceSec + ' 秒自动结束，或再点 🎙 结束作答</span>';
+
+  const finals = []; // each entry: array of alternative transcripts
+  let done = false, gotError = false, retried = false, sawAnyInterim = false;
+  let lastActivity = Date.now(), startedAt = 0, silenceTimer = null;
+
+  const startRec = continuous => {
+    const r = new SR();
+    recogActive = r;
+    r.lang = 'en-US';
+    r.interimResults = true;
+    r.continuous = continuous;
+    r.maxAlternatives = 3;
+    startedAt = Date.now();
+    lastActivity = Date.now();
+    let interim = '';
+    r.onresult = e => {
+      lastActivity = Date.now();
+      interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const res = e.results[i];
+        if (res.isFinal) {
+          const alts = [];
+          for (let j = 0; j < res.length; j++) alts.push(res[j].transcript);
+          finals.push(alts);
+        } else {
+          interim += res[0].transcript;
+        }
+      }
+      if (interim) sawAnyInterim = true;
+      const shown = (finals.map(f => f[0]).join(' ') || interim || '…').trim();
+      resultEl.innerHTML = '<span class="heard-text">🎤 ' + esc(shown) + '</span>';
+    };
+    r.onerror = e => {
+      gotError = true;
+      finish();
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        resultEl.innerHTML = '<span class="verdict bad">麦克风被拒绝（' + e.error + '）— file:// 打开时 Chrome 无法记住授权，每次都会弹；点允许后<b>再点一次 🎙</b>即可。根治：用 HTTPS 地址打开</span>';
+      } else if (e.error === 'no-speech') {
+        resultEl.innerHTML = '<span class="verdict bad">没有听到声音（no-speech）— 离麦克风近一点、稍大声再试</span>';
+      } else if (e.error === 'audio-capture') {
+        resultEl.innerHTML = '<span class="verdict bad">无法访问麦克风设备（audio-capture）— 检查系统是否禁止了该浏览器的麦克风</span>';
+      } else if (e.error === 'network') {
+        resultEl.innerHTML = '<span class="verdict bad">识别服务网络错误（network）— 检查手机网络后重试</span>';
+      } else {
+        resultEl.innerHTML = '<span class="verdict bad">识别出错：' + esc(e.error) + '</span>';
+      }
+    };
+    r.onend = finish;
+    r.start();
+    clearInterval(silenceTimer);
+    // auto-end after silence (continuous mode never ends on its own); threshold from the slider
+    silenceTimer = setInterval(() => {
+      if (Date.now() - lastActivity > silenceSec * 1000) { try { r.stop(); } catch (e) { /* ignore */ } }
+    }, 500);
+  };
+
+  const finish = () => {
+    if (done) return;
+    // some Android Chrome builds end continuous mode instantly with no audio — retry once in non-continuous mode
+    if (!retried && !gotError && !finals.length && !sawAnyInterim && Date.now() - startedAt < 1500) {
+      retried = true;
+      try { recogActive.abort(); } catch (e) { /* ignore */ }
+      startRec(false);
+      return;
+    }
+    done = true;
+    clearInterval(silenceTimer);
+    micEl.classList.remove('listening');
+    recogActive = null;
+    // pick the best-scoring combination of recognition alternatives
+    let candidates;
+    if (!finals.length) candidates = [''];
+    else if (finals.length === 1) candidates = finals[0].slice();
+    else {
+      const maxAlts = Math.max(...finals.map(f => f.length));
+      candidates = [];
+      for (let a = 0; a < maxAlts; a++) candidates.push(finals.map(f => f[Math.min(a, f.length - 1)]).join(' '));
+    }
+    let best = candidates[0] || '', bestScore = -1;
+    for (const c of candidates) {
+      const s = scoreAnswer(c, expected);
+      if (s > bestScore) { bestScore = s; best = c; }
+    }
+    gradeAnswer(best, expected, resultEl, flatIdx);
+  };
+
+  startRec(true);
+}
+
+// ---------- player ----------
+async function playItem(it, myToken) {
+  const gapSec = parseFloat($('gap').value);
+  if (it.kind === 'sentence') {
+    await speak(it.text);
+  } else {
+    const qSpeech = isEnglish(it.q) ? it.q : null;
+    if (qSpeech) {
+      for (const s of splitSentences(it.q)) {
+        if (myToken !== token) return;
+        await waitWhilePaused(myToken);
+        await speak(s);
+      }
+      if (myToken !== token) return;
+      await waitWhilePaused(myToken);
+      await sleep(gapSec * 1000);
+      if (myToken !== token) return;
+      await waitWhilePaused(myToken);
+    }
+    for (const s of splitSentences(it.a)) {
+      if (myToken !== token) return;
+      await waitWhilePaused(myToken);
+      await speak(s);
+    }
+  }
+}
+
+function isEnglish(s) { return /^[\x00-\xFF\u2014\u2018\u2019\u201C\u201D\u00A0]*$/.test(s); }
+
+// read a single text aloud as an explanation (English)
+async function explain(text) {
+  stop();
+  if (!isEnglish(text)) return;
+  setStatus('🔊 讲解');
+  try { await speak(text); } catch (e) { /* ignore */ }
+  setStatus('就绪');
+}
+
+// Chinese explanation: speak with a Chinese TTS voice
+function speakCN(text) {
+  stop();
+  const v = speechSynthesis.getVoices().find(v => /^zh/i.test(v.lang) && /Ting|Tingting|婷| Mei|Yaoyao|female/i.test(v.name))
+    || speechSynthesis.getVoices().find(v => /^zh[-_]CN/i.test(v.lang))
+    || speechSynthesis.getVoices().find(v => /^zh/i.test(v.lang));
+  const parts = text.match(/[^。？！]+[。？！]?/g) || [text];
+  setStatus('💡 中文讲解');
+  const myToken = ++token;
+  (async () => {
+    for (const p of parts) {
+      if (myToken !== token) return;
+      await new Promise(res => {
+        const u = new SpeechSynthesisUtterance(p);
+        if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'zh-CN'; }
+        u.rate = 1.0;
+        u.onend = res; u.onerror = res;
+        speechSynthesis.speak(u);
+      });
+    }
+    if (myToken === token) setStatus('就绪');
+  })();
+}
+
+async function play() {
+  if (playing && paused) { paused = false; setStatus('播放中'); return; }
+  if (playing) return;
+  playing = true; paused = false;
+  const myToken = ++token;
+  setStatus('播放中');
+  $('btnPlay').textContent = '⏸ 暂停';
+  const flat = currentFlat();
+  const seq = (playIndices && playIndices.length) ? playIndices : flat.map((_, i) => i);
+  let pos = seq.indexOf(currentIndex);
+  if (pos < 0) pos = 0;
+  while (true) {
+    if (myToken !== token) return;
+    currentIndex = seq[pos];
+    const it = flat[currentIndex];
+    if (!it) break;
+    highlight();
+    await playItem(it, myToken);
+    if (myToken !== token) return;
+    await sleep(400);
+    if (myToken !== token) return;
+    if (pos < seq.length - 1) {
+      pos++;
+    } else if (repeat) {
+      pos = 0;
+    } else {
+      break;
+    }
+  }
+  if (myToken === token) stop();
+}
+
+function pause() {
+  paused = true;
+  speechSynthesis.pause();
+  setStatus('已暂停');
+  $('btnPlay').textContent = '▶ 继续';
+}
+
+function stop() {
+  token++;
+  playing = false; paused = false;
+  playIndices = null; // leave wrong-list practice mode on stop
+  speechSynthesis.cancel();
+  setStatus('就绪');
+  $('btnPlay').textContent = '▶ 播放';
+}
+
+function setStatus(s) {
+  const el = $('status');
+  el.textContent = (playing && !paused ? '🔊 ' : '') + s;
+  el.classList.toggle('playing', playing && !paused);
+}
+
+// ---------- stats & explanation ----------
+const TIPS = {
+  partA: 'Part A 技巧：抓问题开头的关键词 —— What（名词答案）/ Which（二选一）/ How many（数字）/ If（逻辑推理）。答案大多是简短名词短语，答错时先点题目听清楚问什么。',
+  partB: 'Part B 技巧：复述题。先整句听懂（点句子朗读），注意连读和语调，再遮住跟读。生词：lantern 灯笼、illustration 插图、winding 蜿蜒、dormitory 宿舍、stain 污渍、parcel 包裹、renovate 翻新。',
+  partC: 'Part C 技巧：对话题答案常跟在 because / but / so / actually 后面。先记住问题问的是原因(Why)、时间(When)还是地点(Where)，再对号入座。',
+  partD: 'Part D 技巧：每个故事记 3 个要点（起因 → 经过 → 结果），答案都是名词短语。把 6 个故事各读一遍再做题。',
+  partF: 'Part F 技巧：万能三段式 —— 亮立场（I prefer...）→ First（理由1 + 例子）→ Second（理由2）→ So 收尾。答错时点"讲解"听一遍范例答案，再用自己的话复述。'
+};
+
+function resetResults() { Object.keys(results).forEach(k => delete results[k]); }
+
+function refreshStats() {
+  if ($('statsCard').style.display !== 'none') renderStats();
+}
+
+function renderStats() {
+  const card = $('statsCard');
+  const flat = currentFlat();
+  let ok = 0, near = 0, bad = 0, unanswered = 0;
+  const wrongList = [];
+  flat.forEach((it, i) => {
+    const v = results[i];
+    if (v === 'ok') ok++;
+    else if (v === 'near') near++;
+    else if (v === 'bad') bad++;
+    else unanswered++;
+    if (v === 'near' || v === 'bad') wrongList.push({ i, it });
+  });
+  const answered = ok + near + bad;
+  const rate = answered ? Math.round((ok + near * 0.5) / answered * 100) : 0;
+  let html = '<div style="font-weight:700;font-size:15px;margin-bottom:2px;">📊 本轮成绩 — ' + esc(DATA[currentPart].title) + '</div>'
+    + '<div class="stats-row">'
+    + '<div><span class="stat-num">' + flat.length + '</span>总题数</div>'
+    + '<div><span class="stat-num ok">' + ok + '</span>✓ 正确</div>'
+    + '<div><span class="stat-num near">' + near + '</span>△ 接近</div>'
+    + '<div><span class="stat-num bad">' + bad + '</span>✗ 错误</div>'
+    + '<div><span class="stat-num">' + unanswered + '</span>未作答</div>'
+    + '<div><span class="stat-num">' + rate + '%</span>得分</div>'
+    + '</div>';
+  if (answered === 0) {
+    html += '<div style="font-size:13px;color:var(--muted);">还没有作答记录 —— 用每条后面的 🎙 语音回答，答完这里会统计对错。</div>';
+  } else if (wrongList.length) {
+    html += '<div style="font-weight:700;font-size:13px;margin:6px 0 2px;">错题 / 不熟（点讲解听解析）</div>';
+    wrongList.forEach(w => {
+      const label = w.it.kind === 'sentence' ? w.it.text : (isEnglish(w.it.q) ? w.it.q : w.it.a);
+      const short = label.length > 60 ? label.slice(0, 60) + '…' : label;
+      html += '<div class="wrong-item"><span class="wtxt"><b>' + (w.it.idx + 1) + '.</b> ' + esc(short) + ' <span class="verdict ' + results[w.i] + '">' + (results[w.i] === 'bad' ? '✗' : '△') + '</span></span>'
+        + '<button class="btn" style="padding:3px 10px;font-size:12px;" onclick="gotoAndExplain(' + w.i + ')">🔊 听题</button></div>';
+    });
+    html += '<button class="btn" style="margin-top:8px;" onclick="practiceWrong()">🔁 只练这些错题</button> ';
+    html += '<button class="btn" style="margin-top:8px;" onclick="resetRound()">🔄 重新统计</button>';
+  } else {
+    html += '<div class="verdict ok" style="font-size:14px;">🎉 全部答对！可以切到下一个 Part 了。</div> '
+      + '<button class="btn" style="margin-top:8px;" onclick="resetRound()">🔄 重新统计</button>';
+  }
+  html += '<div class="tips">💡 ' + TIPS[currentPart] + '</div>';
+  card.innerHTML = html;
+}
+
+// jump to item, reveal it, then play Q -> gap -> A as explanation
+function gotoAndExplain(i) {
+  stop();
+  playIndices = null;
+  currentIndex = i;
+  const itemEl = document.querySelector('.item[data-i="' + i + '"]');
+  if (itemEl) {
+    itemEl.querySelectorAll('.q, .a').forEach(el => {
+      el.classList.remove('masked');
+      const eye = el.querySelector('.eye');
+      if (eye) eye.textContent = '🙈';
+    });
+  }
+  highlight();
+  play();
+}
+
+// play only the wrong/unfamiliar items in order
+function practiceWrong() {
+  const flat = currentFlat();
+  const idxs = [];
+  flat.forEach((_, i) => { if (results[i] === 'bad' || results[i] === 'near') idxs.push(i); });
+  if (!idxs.length) return;
+  stop();
+  playIndices = idxs;
+  currentIndex = idxs[0];
+  highlight();
+  play();
+}
+
+function resetRound() {
+  resetResults();
+  renderStats();
+}
+
+// ---------- wire up ----------
+$('btnPlay').onclick = () => { if (playing && !paused) pause(); else if (playing && paused) { paused = false; speechSynthesis.resume(); setStatus('播放中'); $('btnPlay').textContent = '⏸ 暂停'; } else play(); };
+$('btnStop').onclick = stop;
+$('btnPrev').onclick = () => { const f = currentFlat(); if (f.length) { currentIndex = (currentIndex - 1 + f.length) % f.length; highlight(); if (playing) { stop(); play(); } } };
+$('btnNext').onclick = () => { const f = currentFlat(); if (f.length) { currentIndex = (currentIndex + 1) % f.length; highlight(); if (playing) { stop(); play(); } } };
+$('btnRepeat').onclick = () => { repeat = !repeat; $('btnRepeat').textContent = '🔁 循环: ' + (repeat ? '开' : '关'); $('btnRepeat').classList.toggle('active-toggle', repeat); };
+$('btnAnswers').onclick = () => {
+  hideAnswers = !hideAnswers;
+  localStorage.setItem('versant-maskMode', String(hideAnswers));
+  $('btnAnswers').textContent = hideAnswers ? '👁 全部显示' : '🙈 全部遮住';
+  $('btnAnswers').classList.toggle('active-toggle', !hideAnswers);
+  renderList();
+};
+$('btnStats').onclick = () => {
+  const card = $('statsCard');
+  const show = card.style.display === 'none';
+  card.style.display = show ? '' : 'none';
+  $('btnStats').classList.toggle('active-toggle', show);
+  if (show) renderStats();
+};
+$('btnDiag').onclick = async () => {
+  const out = $('diagOut');
+  out.style.display = '';
+  const lines = [];
+  const show = () => { out.textContent = lines.join('\n'); };
+  lines.push('1. 打开方式: ' + location.protocol + ' — ' + (window.isSecureContext ? '安全上下文 ✓（允许用麦克风）' : '非安全上下文 ✗（浏览器禁止麦克风！）必须用 https:// 或 file:// 打开'));
+  lines.push('2. 语音识别 API: ' + (SR_SUPPORTED ? '支持 ✓' : '不支持 ✗'));
+  show();
+  try {
+    const p = await navigator.permissions.query({ name: 'microphone' });
+    lines.push('3. 麦克风授权记忆: ' + p.state + (p.state === 'granted' ? ' ✓ 已记住，不会再弹' : (location.protocol === 'file:' ? ' — file:// 打开无法记住，每次都会弹；改用 localhost 或 https 可根治' : ' — 首次使用会询问一次，点允许后记住')));
+  } catch (e) {
+    lines.push('3. 麦克风授权记忆: 无法查询（' + e.name + '）');
+  }
+  show();
+  lines.push('4. 麦克风采集: 测试中…（若弹出授权请点允许）');
+  show();
+  try {
+    const stream = await Promise.race([
+      navigator.mediaDevices.getUserMedia({ audio: true }),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT-8s')), 8000))
+    ]);
+    const track = stream.getAudioTracks()[0];
+    lines[lines.length - 1] = '4. 麦克风采集: 通过 ✓（设备: ' + (track && track.label ? track.label : '默认') + '）';
+    stream.getTracks().forEach(t => t.stop());
+  } catch (e) {
+    lines[lines.length - 1] = '4. 麦克风采集: 失败 ✗ — ' + e.name + ': ' + e.message;
+  }
+  lines.push('5. 实时识别测试: 点击下方"开始识别测试"后说一句英文…');
+  show();
+  if (!document.getElementById('diagSR')) {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.id = 'diagSR';
+    b.textContent = '开始识别测试（说一句英文）';
+    b.style.marginTop = '6px';
+    b.onclick = () => {
+      const r = new SR();
+      r.lang = 'en-US';
+      r.interimResults = true;
+      const evts = ['start', 'audiostart', 'speechstart', 'result', 'audioend', 'end', 'error'];
+      const log = ['— 事件流 —'];
+      evts.forEach(n => { r['on' + n] = e => { log.push(n + (n === 'error' ? ': ' + e.error : '') + (n === 'result' ? ': "' + e.results[e.results.length - 1][0].transcript + '"' : '')); out.textContent = lines.concat(log).join('\n'); }; });
+      r.start();
+      setTimeout(() => { try { r.stop(); } catch (e) { /* ignore */ } out.textContent = lines.concat(log).join('\n') + '\n（测试结束）'; }, 6000);
+    };
+    out.after(b);
+  }
+};
+$('rate').oninput = () => { $('rateVal').textContent = parseFloat($('rate').value).toFixed(2); };
+$('gap').oninput = () => { $('gapVal').textContent = parseFloat($('gap').value).toFixed(1) + 's'; };
+const savedSilence = parseFloat(localStorage.getItem('versant-silence'));
+if (savedSilence >= 1 && savedSilence <= 10) $('silence').value = savedSilence;
+$('silenceVal').textContent = parseFloat($('silence').value).toFixed(1) + 's';
+$('silence').oninput = () => {
+  $('silenceVal').textContent = parseFloat($('silence').value).toFixed(1) + 's';
+  localStorage.setItem('versant-silence', $('silence').value);
+};
+$('scopeSel').onchange = () => { stop(); currentIndex = 0; playIndices = null; resetResults(); renderList(); refreshStats(); };
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+    e.preventDefault();
+    $('btnPlay').click();
+  }
+});
+
+$('btnAnswers').textContent = hideAnswers ? '👁 全部显示' : '🙈 全部遮住';
+$('btnAnswers').classList.toggle('active-toggle', !hideAnswers);
+if (!SR_SUPPORTED) $('hint').textContent = '当前浏览器不支持语音识别（🎙 已隐藏）——请使用 Chrome 或 Safari 打开本页。';
+renderTabs();
+renderScope();
+renderList();
+</script>
+</body>
+</html>
